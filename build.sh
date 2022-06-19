@@ -7,6 +7,7 @@ GAME_CI_VERSION=1.0.1 # https://github.com/game-ci/docker/releases
 MY_USERNAME=qkrsogusl3
 COMPOSE_FILE=./unity-build-scripts/docker-compose.yml
 COMPOSE_ENV_FILE=./unity-build-scripts/.env
+COMPOSE_ENV_FILE_SAMPLE=./unity-build-scripts/.env.sample
 
 if [ -z "$UNITY_LICENSE" ] || [ -z "$PLATFORM" ]; then 
     echo "not found env"
@@ -16,7 +17,8 @@ if [ -z "$UNITY_LICENSE" ] || [ -z "$PLATFORM" ]; then
 fi
 
 if [ ! -f $COMPOSE_ENV_FILE ]; then
-    touch $COMPOSE_ENV_FILE;
+    #touch $COMPOSE_ENV_FILE;
+    cp $COMPOSE_ENV_FILE_SAMPLE $COMPOSE_ENV_FILE
 fi
 
 # don't hesitate to remove unused components from this list
