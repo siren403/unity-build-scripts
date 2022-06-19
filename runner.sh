@@ -5,7 +5,7 @@ function build {
 }
 
 function run-lane {
-    cd fastlane
+    cd unity-build-scripts/fastlane
     bundle install
     # fastlane
     export LC_ALL=en_US.UTF-8
