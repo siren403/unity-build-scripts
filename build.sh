@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-set -ex
+#set -ex
+set -e
 
 UNITY_VERSION=2021.3.3f1
 GAME_CI_VERSION=1.0.1 # https://github.com/game-ci/docker/releases
