@@ -5,6 +5,7 @@ set -ex
 UNITY_VERSION=2021.3.3f1
 GAME_CI_VERSION=1.0.1 # https://github.com/game-ci/docker/releases
 MY_USERNAME=qkrsogusl3
+COMPOSE_FILE=./unity-build-scripts/docker-compose.yml
 
 if [ -z "$UNITY_LICENSE" ] || [ -z "$PLATFORM" ] || [ -z "$JOB" ] || [ -z "$LANE" ]; then 
     echo "not found env"
@@ -32,10 +33,21 @@ do
   fi
   
   if [ -z $(docker images -q $IMAGE_TO_PUBLISH) ]; then
-    docker-compose -f ./unity-build-scripts/docker-compose.yml build;
+    docker-compose -f ${COMPOSE_FILE} build;
   fi
-
-  docker run --rm -v $(echo $(pwd):/app) -v /tmp:/tmp $IMAGE_TO_PUBLISH $(echo ${args})
+: '
+  docker-compose -f ${COMPOSE_FILE} run \
+      --entrypoint /bin/bash \
+      --rm \
+      -v $(echo $(pwd):/app) \
+      -v /tmp:/tmp \
+      unity
+'
+  docker-compose -f ${COMPOSE_FILE} run \
+      --rm \
+      -v $(echo $(pwd):/app) \
+      -v /tmp:/tmp \
+      unity $(echo ${args})
 # uncomment the following to publish the built images to docker hub
 #  docker push ${IMAGE_TO_PUBLISH}
 done

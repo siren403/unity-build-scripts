@@ -8,16 +8,19 @@ function run-lane {
     cd unity-build-scripts/fastlane
     bundle install
     export FL_UNITY_EXECUTE_METHOD=UActions.Bootstrap.Run
+    KEY=$PRODUCT_NAME-$PLATFORM
+    restore $KEY
     bundle exec fastlane $PLATFORM $@
+    cache $KEY
 }
-
+: '
 function deploy {
     restore $PRODUCT_NAME
     build $1
     cache $PRODUCT_NAME
     run-lane $2
 }
-
+'
 function restore {
     tar -xvf /tmp/buildkite-$1-cache.tar || true
 }

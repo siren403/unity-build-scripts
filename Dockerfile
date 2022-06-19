@@ -51,19 +51,18 @@ COPY --from=rubybuild $RUBY_PATH $RUBY_PATH
 ARG PLATFORM
 ENV PLATFORM $PLATFORM
 RUN if [ "$PLATFORM" = "android" ]; then gem install fastlane; fi
-RUN if [ "$PLATFORM" = "android" ]; then \
+#RUN if [ "$PLATFORM" = "android" ]; then \
         #echo export LC_ALL=en_US.UTF-8 >> /root/.bashrc; \
         #echo export LANG=en_US.UTF-8 >> /root/.bashrc; \
-        echo export FL_UNITY_PROJECT_PATH=/app >> /root/.bashrc; \
-        echo export FL_UNITY_PATH=unity-editor >> /root/.bashrc; \
-        fi
+        #echo export FL_UNITY_PROJECT_PATH=/app >> /root/.bashrc; \
+        #echo export FL_UNITY_PATH=unity-editor >> /root/.bashrc; \
+        #fi
 
 ARG UNITY_LICENSE
 RUN echo "$UNITY_LICENSE" >> root/env-unity-license.ulf && \
         unity-editor -batchmode -manualLicenseFile root/env-unity-license.ulf -logfile; exit 0
 
 WORKDIR /app
-
 COPY ./runner.sh /usr/bin/runner.sh
 ENTRYPOINT ["/usr/bin/runner.sh"]
 CMD ["init"]
