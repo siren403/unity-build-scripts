@@ -22,7 +22,7 @@ function deploy {
 }
 '
 function restore {
-    if [ "${ENABLE_CACHE:-true}" = false ]; then
+    if [ "${ENABLE_CACHE:-false}" = false ]; then
         exit 0;
     fi
 
@@ -30,7 +30,7 @@ function restore {
 }
 
 function cache {
-    if [ "${ENABLE_CACHE:-true}" = false ]; then
+    if [ "${ENABLE_CACHE:-false}" = false ]; then
         exit 0;
     fi
     
