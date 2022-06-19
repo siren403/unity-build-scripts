@@ -5,11 +5,19 @@ function build {
 }
 
 function run-lane {
+    cd fastlane
+    bundle install
+    # fastlane
+    export LC_ALL=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    
     bundle exec fastlane $PLATFORM $1
 }
 
 function deploy {
+    restore $PRODUCT_NAME
     build $1
+    cache $PRODUCT_NAME
     run-lane $2
 }
 

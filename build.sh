@@ -23,12 +23,19 @@ do
   export GAME_CI_UNITY_EDITOR_IMAGE=unityci/editor:ubuntu-${UNITY_VERSION}-${component}-${GAME_CI_VERSION}
   export IMAGE_TO_PUBLISH=${MY_USERNAME}/editor:ubuntu-${UNITY_VERSION}-${component}-${GAME_CI_VERSION}
   export PLATFORM=${component}
+
+  args=("$@")
+
+  if [[ " ${args[*]} " =~ "-rmi" ]]; then
+    args="${args[@]/-rmi}"
+    docker rmi $(docker images -q IMAGE_TO_PUBLISH) || true
+  fi
   
   if [ -z $(docker images -q $IMAGE_TO_PUBLISH) ]; then
     docker-compose build
   fi
 
-  docker run --rm $IMAGE_TO_PUBLISH
+  docker run --rm $IMAGE_TO_PUBLISH $(echo ${args})
 # uncomment the following to publish the built images to docker hub
 #  docker push ${IMAGE_TO_PUBLISH}
 done
