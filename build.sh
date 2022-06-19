@@ -6,12 +6,17 @@ UNITY_VERSION=2021.3.3f1
 GAME_CI_VERSION=1.0.1 # https://github.com/game-ci/docker/releases
 MY_USERNAME=qkrsogusl3
 COMPOSE_FILE=./unity-build-scripts/docker-compose.yml
+COMPOSE_ENV_FILE=./unity-build-scripts/.env
 
 if [ -z "$UNITY_LICENSE" ] || [ -z "$PLATFORM" ]; then 
     echo "not found env"
     echo UNITY_LICENSE=$UNITY_LICENSE;
     echo PLATFORM=$PLATFORM;
     exit 1;
+fi
+
+if [ ! -f $COMPOSE_ENV_FILE ]; then
+    touch $COMPOSE_ENV_FILE;
 fi
 
 # don't hesitate to remove unused components from this list
