@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+set -ex
+
+UNITY_VERSION=2021.3.3f1
+GAME_CI_VERSION=1.0.1 # https://github.com/game-ci/docker/releases
+MY_USERNAME=qkrsogusl3
+
+if [ -z "$UNITY_LICENSE" ] || [ -z "$PLATFORM" ] || [ -z "$JOB" ] || [ -z "$LANE" ]; then 
+    echo "not found env"
+    echo UNITY_LICENSE=$UNITY_LICENSE;
+    echo PLATFORM=$PLATFORM;
+    echo JOB=$JOB
+    echo LANE=$LANE
+    exit 1;
+fi
+
+# don't hesitate to remove unused components from this list
+declare -a components=("$PLATFORM")
+
+for component in "${components[@]}"
+do
+  export GAME_CI_UNITY_EDITOR_IMAGE=unityci/editor:ubuntu-${UNITY_VERSION}-${component}-${GAME_CI_VERSION}
+  export IMAGE_TO_PUBLISH=${MY_USERNAME}/editor:ubuntu-${UNITY_VERSION}-${component}-${GAME_CI_VERSION}
+  export PLATFORM=${component}
+  
+  if [ -z $(docker images -q $IMAGE_TO_PUBLISH) ]; then
+    docker-compose build
+  fi
+
+  docker run --rm $IMAGE_TO_PUBLISH
+# uncomment the following to publish the built images to docker hub
+#  docker push ${IMAGE_TO_PUBLISH}
+done
