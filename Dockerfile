@@ -50,7 +50,7 @@ COPY --from=rubybuild $RUBY_PATH $RUBY_PATH
 
 ARG PLATFORM
 #ENV PLATFORM $PLATFORM
-RUN if [ "$PLATFORM" = "android" ]; then gem install fastlane; fi
+RUN if [ "$PLATFORM" = "android" ]; then gem install fastlane; export LC_ALL=en_US.UTF-8; export LANG=en_US.UTF-8; fi
 
 ARG UNITY_LICENSE
 RUN echo "$UNITY_LICENSE" >> root/env-unity-license.ulf && \
