@@ -5,6 +5,8 @@ function build {
 }
 
 function run-lane {
+    pwd
+    ls
     cd unity-build-scripts/fastlane
     bundle install
     bundle exec fastlane $PLATFORM $1
