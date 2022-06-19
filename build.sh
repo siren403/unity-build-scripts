@@ -27,12 +27,12 @@ do
   args=("$@")
 
   if [[ " ${args[*]} " =~ "-rmi" ]]; then
-    args="${args[@]/-rmi}"
-    docker rmi $(docker images -q IMAGE_TO_PUBLISH) || true
+    args="${args[@]/-rmi}";
+    docker rmi $(docker images -q $IMAGE_TO_PUBLISH) || true;
   fi
   
   if [ -z $(docker images -q $IMAGE_TO_PUBLISH) ]; then
-    docker-compose -f ./unity-build-scripts/docker-compose.yml build
+    docker-compose -f ./unity-build-scripts/docker-compose.yml build;
   fi
 
   docker run --rm -v $(echo $(cd ../ && pwd):/app) -v /tmp:/tmp $IMAGE_TO_PUBLISH $(echo ${args})
