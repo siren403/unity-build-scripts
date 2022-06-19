@@ -7,12 +7,10 @@ GAME_CI_VERSION=1.0.1 # https://github.com/game-ci/docker/releases
 MY_USERNAME=qkrsogusl3
 COMPOSE_FILE=./unity-build-scripts/docker-compose.yml
 
-if [ -z "$UNITY_LICENSE" ] || [ -z "$PLATFORM" ] || [ -z "$JOB" ] || [ -z "$LANE" ]; then 
+if [ -z "$UNITY_LICENSE" ] || [ -z "$PLATFORM" ]; then 
     echo "not found env"
     echo UNITY_LICENSE=$UNITY_LICENSE;
     echo PLATFORM=$PLATFORM;
-    echo JOB=$JOB
-    echo LANE=$LANE
     exit 1;
 fi
 
