@@ -22,10 +22,18 @@ function deploy {
 }
 '
 function restore {
+    if [ "${ENABLE_CACHE:-true}" = false ]; then
+        exit 0;
+    fi
+
     tar -xvf /tmp/buildkite-$1-cache.tar || true
 }
 
 function cache {
+    if [ "${ENABLE_CACHE:-true}" = false ]; then
+        exit 0;
+    fi
+    
     tar -cf /tmp/buildkite-$1-cache.tar ./Library
 }
 
