@@ -35,7 +35,7 @@ do
     docker-compose -f ./unity-build-scripts/docker-compose.yml build;
   fi
 
-  docker run --rm -v $(echo $(cd ../ && pwd):/app) -v /tmp:/tmp $IMAGE_TO_PUBLISH $(echo ${args})
+  docker run --rm -v $(echo $(pwd):/app) -v /tmp:/tmp $IMAGE_TO_PUBLISH $(echo ${args})
 # uncomment the following to publish the built images to docker hub
 #  docker push ${IMAGE_TO_PUBLISH}
 done
