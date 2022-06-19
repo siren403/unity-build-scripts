@@ -5,11 +5,10 @@ function build {
 }
 
 function run-lane {
-    pwd
-    ls
     cd unity-build-scripts/fastlane
     bundle install
-    bundle exec fastlane $PLATFORM $1
+    export FL_UNITY_EXECUTE_METHOD=UActions.Bootstrap.Run
+    bundle exec fastlane $PLATFORM $@
 }
 
 function deploy {
