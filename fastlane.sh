@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd "./unity-build-scripts/fastlane"
+cd "./unity-build-scripts/fastlane/"
 
 eval "$(rbenv init -)"
 bundle install
