@@ -1,8 +1,13 @@
 #!/bin/bash
 
+# rbenv
+eval "$(rbenv init -)"
+
+# pyenv
+eval "$(pyenv init --path)"
+
 cd "./unity-build-scripts/fastlane/"
 
-eval "$(rbenv init -)"
 bundle install
 
 # fastlane
