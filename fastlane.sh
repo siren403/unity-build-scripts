@@ -9,4 +9,4 @@ bundle install
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
-bundle exec fastlane $PLATFORM "$@" 
+bundle exec fastlane $PLATFORM "$@"
