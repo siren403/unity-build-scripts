@@ -200,13 +200,13 @@ platform :ios do
                 destination: destination,
                 build_for_testing: true
             )
-            
+
             derived_path = lane_context[SharedValues::SCAN_DERIVED_DATA_PATH]
 
             sh "(ios-deploy -i #{device} -b #{derived_path}/Build/Products/Debug-iphoneos/#{product_name}.app || true)"
         rescue => ex
             UI.error(ex)
-        end    
+        end
     end
 
     error do |lane, exception|
@@ -214,7 +214,14 @@ platform :ios do
     end
 
     lane :deploy_app_center do |options|
-        xcode_path = build(job: options[:job])
+
+        xcode_path = ''
+        if options[:job] != nil
+            xcode_path = build(job: options[:job])
+        elsif options[:xcode_path] != nil
+            xcode_path = options[:xcode_path]
+        end
+
         match(type: "development", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
         update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Development")
