@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function build {
-    unity-editor -quit -nographics -projectPath /app -executeMethod UActions.Bootstrap.Run -logfile - -buildTarget $PLATFORM -job $1
+    unity-editor -quit -nographics -projectPath /app -executeMethod UActions.Bootstrap.Run -logfile - -buildTarget $PLATFORM -work $1
 }
 
 function run-lane {
