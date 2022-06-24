@@ -35,7 +35,7 @@ platform :android do
         work = nil
         if options[:work] != nil
             work = options[:work]
-        elsif ENV["job"] != nil
+        elsif ENV["work"] != nil
             work = ENV["work"]
         end
         apk_path = build(work: work)
