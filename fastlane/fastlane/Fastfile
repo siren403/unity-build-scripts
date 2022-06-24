@@ -32,30 +32,24 @@ platform :android do
     # end
 
     lane :deploy_app_center do |options|
-        job = nil
-        if options[:job] != nil
-            job = options[:job]
+        work = nil
+        if options[:work] != nil
+            work = options[:work]
         elsif ENV["job"] != nil
-            job = ENV["job"]
+            work = ENV["work"]
         end
-        apk_path = build(job: job)
+        apk_path = build(work: work)
         upload_app_center(path: apk_path)
     end
 
     private_lane :build do |options|
-        # PROJECT_DIR = File.expand_path('../../', Dir.pwd)
-        #         LOGFILE = "#{PROJECT_DIR}/Editor.log"
-        #         ARGS = "#{LOGFILE}"
         ARGS = ""
 
-        if options[:job] != nil
-            ARGS = "#{ARGS} -job #{options[:job]}"
+        if options[:work] != nil
+            ARGS = "#{ARGS} -work #{options[:work]}"
         end
-
-        # puts PROJECT_DIR
-
+        
         unity(
-            # project_path: PROJECT_DIR,
             build_target: "Android",
             extra_args: ARGS
         )
@@ -166,7 +160,7 @@ end
 platform :ios do
 
     lane :deploy_device do |options|
-        xcode_path = build(job: options[:job])
+        xcode_path = build(work: options[:work])
         destination = "platform=iOS,id=#{ENV["DEPLOY_DEVICE_ID"]}"
 
         install_device(
@@ -216,8 +210,8 @@ platform :ios do
     lane :deploy_app_center do |options|
 
         xcode_path = ''
-        if options[:job] != nil
-            xcode_path = build(job: options[:job])
+        if options[:work] != nil
+            xcode_path = build(work: options[:work])
         elsif options[:xcode_path] != nil
             xcode_path = options[:xcode_path]
         end
@@ -239,8 +233,8 @@ platform :ios do
     private_lane :build do |options|
         ARGS = ""
 
-        if options[:job] != nil
-            ARGS = "#{ARGS} -job #{options[:job]}"
+        if options[:work] != nil
+            ARGS = "#{ARGS} -work #{options[:work]}"
         end
 
         unity(
@@ -591,25 +585,25 @@ platform :ios do
     # end
 end
 
-def get_unity_path (version)
-    unless version
-        UI.user_error!("require unity_version")
-    end
+# def get_unity_path (version)
+#     unless version
+#         UI.user_error!("require unity_version")
+#     end
 
-    path = ''
-    if OS::Underlying.docker? and OS::Underlying.linux?
-        # See: https://gitlab.com/gableroux/unity3d
-        # sh "echo '/opt/Unity/Editor/Unity'"
-        path << "/opt/unity/editors/#{version}/Editor/Unity"
-    elsif OS.mac?
-        path << "/Applications/Unity/Hub/Editor/#{version}/Unity.app/Contents/MacOS/Unity"
-    elsif OS.windows?
-        path << "C:\\Program Files\\Unity\\Hub\\Editor\\#{version}\\Editor\\Unity.exe"
-    end
+#     path = ''
+#     if OS::Underlying.docker? and OS::Underlying.linux?
+#         # See: https://gitlab.com/gableroux/unity3d
+#         # sh "echo '/opt/Unity/Editor/Unity'"
+#         path << "/opt/unity/editors/#{version}/Editor/Unity"
+#     elsif OS.mac?
+#         path << "/Applications/Unity/Hub/Editor/#{version}/Unity.app/Contents/MacOS/Unity"
+#     elsif OS.windows?
+#         path << "C:\\Program Files\\Unity\\Hub\\Editor\\#{version}\\Editor\\Unity.exe"
+#     end
 
-    unless File.exist?(path)
-        UI.user_error!("not found editor path: #{path}")
-    end
+#     unless File.exist?(path)
+#         UI.user_error!("not found editor path: #{path}")
+#     end
 
-    return path
-end
+#     return path
+# end
