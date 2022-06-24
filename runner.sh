@@ -10,7 +10,7 @@ function run-lane {
     export FL_UNITY_EXECUTE_METHOD=UActions.Bootstrap.Run
     #KEY=$PRODUCT_NAME-$PLATFORM
     #restore $KEY
-    bundle exec fastlane $PLATFORM $@
+    bundle exec fastlane $PLATFORM "$@"
     #cache $KEY
 }
 : '
