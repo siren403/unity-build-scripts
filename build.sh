@@ -3,15 +3,16 @@
 #set -ex
 set -e
 
-UNITY_VERSION=2021.3.3f1
+# UNITY_VERSION=2021.3.3f1
 GAME_CI_VERSION=1.0.1 # https://github.com/game-ci/docker/releases
 MY_USERNAME=qkrsogusl3
 COMPOSE_FILE=./unity-build-scripts/docker-compose.yml
 COMPOSE_ENV_FILE=./unity-build-scripts/.env
 COMPOSE_ENV_FILE_SAMPLE=./unity-build-scripts/.env.sample
 
-if [ -z "$UNITY_LICENSE" ] || [ -z "$PLATFORM" ]; then 
+if [ -z "$UNITY_VERSION" ] || [ -z "$UNITY_LICENSE" ] || [ -z "$PLATFORM" ]; then 
     echo "not found env"
+    echo UNITY_VERSION=$UNITY_VERSION;
     echo UNITY_LICENSE=$UNITY_LICENSE;
     echo PLATFORM=$PLATFORM;
     exit 1;
