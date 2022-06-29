@@ -60,9 +60,10 @@ do
 '
 if [ "$DEBUG" = true ]; then
   docker-compose -f ${COMPOSE_FILE} run \
+      -d --entrypoint /bin/bash \
       -v $(echo $(pwd):/app) \
       -v /tmp:/tmp \
-      unity $(echo ${args})
+      unity init
 else
   docker-compose -f ${COMPOSE_FILE} run \
       --rm \
