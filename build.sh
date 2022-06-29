@@ -58,12 +58,19 @@ do
   
   echo $UNITY_PROJECT_DIR
 '
-  
+if [ "$DEBUG" = true ]; then
+  docker-compose -f ${COMPOSE_FILE} run \
+      -v $(echo $(pwd):/app) \
+      -v /tmp:/tmp \
+      unity $(echo ${args})
+else
   docker-compose -f ${COMPOSE_FILE} run \
       --rm \
       -v $(echo $(pwd):/app) \
       -v /tmp:/tmp \
       unity $(echo ${args})
+fi
+
 # uncomment the following to publish the built images to docker hub
 #  docker push ${IMAGE_TO_PUBLISH}
 done
