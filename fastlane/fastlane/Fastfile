@@ -311,6 +311,60 @@ platform :ios do
         )
     end
 
+    lane :deploy_testflight do |options|
+        xcode_path = ''
+        if options[:work] != nil
+            xcode_path = build(work: options[:work])
+        elsif options[:xcode_path] != nil
+            xcode_path = options[:xcode_path]
+        end
+
+        unless xcode_path
+            UI.user_error!("empty xcode_path")
+        end
+
+        match(
+            type: "appstore",
+            readonly: true
+        )
+        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+        update_code_signing_settings(
+            path: xcode_path,
+            targets: "Unity-iPhone",
+            use_automatic_signing: false,
+            team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
+            profile_name: profiles[CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)],
+            code_sign_identity: "Apple Distribution",
+        )
+        output_dir = "Build/AppStore";
+        # App Uses Non-Exempt Encryption : No
+        gym(
+            scheme: "Unity-iPhone",
+            project: xcode_path,
+            configuration: "Release",
+            clean: true,
+            output_directory: output_dir,
+            export_method: "app-store",
+            include_bitcode: false,
+            export_options: {
+                compileBitcode: false
+            },
+        )
+        upload_pilot(output_dir: output_dir)
+    end
+
+    lane :upload_pilot do |options|
+
+        # ipa_path = File.expand_path("../Build/AppStore/AppBuilder.ipa");
+        ipa_path = "#{ENV["FL_UNITY_PROJECT_PATH"]}/Build/ios/#{ENV["PRODUCT_NAME"]}/#{options[:output_dir]}/#{ENV["PRODUCT_NAME"]}.ipa"
+
+        pilot(
+            api_key_path: File.expand_path(ENV["APPSTORECONNECT_API_JSON"], Dir.pwd),
+            # username: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id),
+            ipa: ipa_path,
+        )
+    end
+
     # def update_signing(path, code_sign_identity)
     #     profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
     #     update_code_signing_settings(
