@@ -49,9 +49,17 @@ do
       -v /tmp:/tmp \
       unity
 '
+  if [ -n $UNITY_PROJECT_ROOT ]; then
+    UNITY_PROJECT_DIR="$(pwd)/$UNITY_PROJECT_ROOT";
+  else
+    UNITY_PROJECT_DIR="$(pwd)"
+  fi
+  
+  echo $UNITY_PROJECT_DIR
+  
   docker-compose -f ${COMPOSE_FILE} run \
       --rm \
-      -v $(echo $(pwd):/app) \
+      -v $(echo $(echo $UNITY_PROJECT_DIR):/app) \
       -v /tmp:/tmp \
       unity $(echo ${args})
 # uncomment the following to publish the built images to docker hub
