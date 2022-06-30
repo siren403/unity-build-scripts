@@ -207,6 +207,32 @@ platform :ios do
 
     end
 
+    lane :signing_xcode_development do |options|
+        xcode_path = ''
+        if options[:work] != nil
+            xcode_path = build(work: options[:work])
+        elsif options[:xcode_path] != nil
+            xcode_path = options[:xcode_path]
+        end
+
+        match(type: "development", readonly: true)
+        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Development")
+    end
+    
+    lane :signing_xcode_distribution do |options|
+        xcode_path = ''
+        if options[:work] != nil
+            xcode_path = build(work: options[:work])
+        elsif options[:xcode_path] != nil
+            xcode_path = options[:xcode_path]
+        end
+
+        match(type: "appstore", readonly: true)
+        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Distribution")
+    end
+    
     lane :deploy_app_center do |options|
 
         xcode_path = ''
