@@ -244,7 +244,7 @@ platform :ios do
 
         match(type: "development", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Development")
+        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Development", build_configurations: ["ReleaseForRunning"])
 
         export_ipa(project_path: xcode_path, output_dir: "Build/iOS", export_method: "development")
         ipa = lane_context[:IPA_OUTPUT_PATH]
@@ -273,6 +273,13 @@ platform :ios do
 
     private_lane :export_ipa do |options|
         project_path = options[:project_path]
+        workspace_path = nil
+        
+        if project_path.end_with?(".xcworkspace")
+            workspace_path = project_path;
+            project_path = nil
+        end
+        
         export_method = options[:export_method]
 
         output_dir = "#{options[:output_dir]}/#{export_method}"
@@ -282,7 +289,8 @@ platform :ios do
         gym(
             scheme: "Unity-iPhone",
             project: project_path,
-            configuration: "Release",
+            workspace: workspace_path,
+            configuration: "ReleaseForRunning",
             clean: true,
             output_directory: output_dir,
             export_method: export_method,
@@ -308,6 +316,7 @@ platform :ios do
         profiles = options[:profiles]
         path = options[:path]
         code_sign_identity = options[:code_sign_identity]
+        build_configurations = options[:build_configurations]
 
         update_code_signing_settings(
             path: path,
@@ -315,7 +324,8 @@ platform :ios do
             use_automatic_signing: false,
             team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
             profile_name: profiles[CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)],
-            code_sign_identity: code_sign_identity
+            code_sign_identity: code_sign_identity,
+            build_configurations: build_configurations
         )
     end
 
@@ -616,19 +626,7 @@ platform :ios do
     #     )
     # end
     #
-    # lane :build do |options|
-    #     unity = get_unity_path(options[:unity_version])
-    #     project = "/Users/aaron/workspace/unity/AppBuilder"
-    #     method = "AppBuilderSample.BasiciOS.Build"
-    #     args = ""
-    #     unity(
-    #         unity_path: unity,
-    #         project_path: project,
-    #         build_target: "iOS",
-    #         execute_method: method,
-    #         extra_args: args
-    #     )
-    # end
+ 
     #
     # lane :test do
     #     project = File.expand_path("../Build/iOS/AppBuilder/Unity-iPhone.xcodeproj", Dir.pwd)
