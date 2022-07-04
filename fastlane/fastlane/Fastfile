@@ -397,7 +397,7 @@ platform :ios do
         ipa_path = options[:ipa_path]
 
         pilot(
-            api_key_path: File.expand_path(ENV["APPSTORECONNECT_API_JSON"], Dir.pwd),
+            api_key_path: ENV["PILOT_API_KEY_PATH"],
             # username: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id),
             ipa: ipa_path,
         )
