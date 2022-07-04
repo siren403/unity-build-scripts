@@ -18,6 +18,8 @@
 require 'os'
 require 'fastlane_core/ui/ui'
 
+fastlane_require 'dotenv'
+
 UI = FastlaneCore::UI unless Fastlane.const_defined?("UI")
 
 platform :android do
