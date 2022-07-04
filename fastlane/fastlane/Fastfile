@@ -228,6 +228,8 @@ platform :ios do
     
     lane :deploy_app_center do |options|
 
+        puts ENV
+        
         xcode_root = options[:xcode_root]
         xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
         
