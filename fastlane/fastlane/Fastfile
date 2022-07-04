@@ -251,7 +251,7 @@ platform :ios do
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
         update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Development", build_configurations: ["ReleaseForRunning"])
         
-        export_ipa(project_path: project_path, output_dir: "Build/iOS", export_method: "development")
+        export_ipa(project_path: project_path, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
         ipa = lane_context[:IPA_OUTPUT_PATH]
         dsym = lane_context[:DSYM_OUTPUT_PATH]
 
@@ -290,12 +290,14 @@ platform :ios do
         output_dir = "#{options[:output_dir]}/#{export_method}"
 
         archive_path = "#{output_dir}/Archive"
-
+        
+        configuration = options[:configuration]
+        
         gym(
             scheme: "Unity-iPhone",
             project: project_path,
             workspace: workspace_path,
-            configuration: "ReleaseForRunning",
+            configuration: configuration,
             clean: true,
             output_directory: output_dir,
             export_method: export_method,
@@ -353,51 +355,44 @@ platform :ios do
     end
 
     lane :deploy_testflight do |options|
-        xcode_path = ''
-        if options[:work] != nil
-            xcode_path = build(work: options[:work])
-        elsif options[:xcode_path] != nil
-            xcode_path = options[:xcode_path]
+        
+        xcode_root = options[:xcode_root]
+        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
+        
+        project_path = xcode_proj
+
+        xcode_workspace = options[:xcode_workspace]
+        if xcode_workspace != nil
+            project_path = "#{xcode_root}/#{xcode_workspace}"
+        end
+        
+        puts xcode_root
+        puts xcode_proj
+        puts project_path
+
+        unless xcode_proj
+            UI.user_error!("empty xcode_proj")
         end
 
-        unless xcode_path
-            UI.user_error!("empty xcode_path")
-        end
-
-        match(
-            type: "appstore",
-            readonly: true
-        )
+        match(type: "appstore", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_code_signing_settings(
-            path: xcode_path,
-            targets: "Unity-iPhone",
-            use_automatic_signing: false,
-            team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
-            profile_name: profiles[CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)],
-            code_sign_identity: "Apple Distribution",
-        )
-        output_dir = "Build/AppStore";
-        # App Uses Non-Exempt Encryption : No
-        gym(
-            scheme: "Unity-iPhone",
-            project: xcode_path,
-            configuration: "Release",
-            clean: true,
-            output_directory: output_dir,
-            export_method: "app-store",
-            include_bitcode: false,
-            export_options: {
-                compileBitcode: false
-            },
-        )
-        upload_pilot(output_dir: output_dir)
+        update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Distribution", build_configurations: ["Release"])
+        
+        
+        export_ipa(project_path: project_path, output_dir: "Build/AppStore", export_method: "app-store", configuration: "Release")
+        ipa = lane_context[:IPA_OUTPUT_PATH]
+        dsym = lane_context[:DSYM_OUTPUT_PATH]
+
+        puts ipa
+        puts dsym
+        
+        upload_pilot(ipa_path: ipa)
     end
 
     lane :upload_pilot do |options|
 
         # ipa_path = File.expand_path("../Build/AppStore/AppBuilder.ipa");
-        ipa_path = "#{ENV["FL_UNITY_PROJECT_PATH"]}/Build/ios/#{ENV["PRODUCT_NAME"]}/#{options[:output_dir]}/#{ENV["PRODUCT_NAME"]}.ipa"
+        ipa_path = options[:ipa_path]
 
         pilot(
             api_key_path: File.expand_path(ENV["APPSTORECONNECT_API_JSON"], Dir.pwd),
