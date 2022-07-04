@@ -228,7 +228,9 @@ platform :ios do
     
     lane :deploy_app_center do |options|
 
-        puts ENV
+        ENV.attributes.each do |attr_name, attr_value|
+            UI.message "#{attr_name}, #{attr_value}"
+        end
         
         xcode_root = options[:xcode_root]
         xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
