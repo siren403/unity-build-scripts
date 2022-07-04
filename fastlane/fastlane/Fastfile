@@ -319,7 +319,7 @@ platform :ios do
         puts "ipa: #{ipa_path}"
         puts "dsym: #{dsym_path}"
         
-        return ipa_path, dsym_path
+        [ipa_path, dsym_path]
     end
 
     private_lane :update_signing do |options|
