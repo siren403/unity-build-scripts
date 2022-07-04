@@ -1,3 +1,5 @@
 **/.env
 !**/.env.sample
 env.sh
+
+**/secrets
