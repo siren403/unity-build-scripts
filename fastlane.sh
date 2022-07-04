@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# fastlane
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
 # rbenv
 eval "$(rbenv init -)"
 
@@ -14,8 +18,5 @@ cd "./unity-build-scripts/fastlane/"
 
 bundle install
 
-# fastlane
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
 
 bundle exec fastlane $PLATFORM "$@"
