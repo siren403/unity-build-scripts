@@ -228,11 +228,6 @@ platform :ios do
     
     lane :deploy_app_center do |options|
 
-        UI.message ENV["UNITY_VERSION"]
-        UI.message ENV["FL_UNITY_VERSION"]
-        UI.message ENV["APP_IDENTIFIER"]
-        
-        
         xcode_root = options[:xcode_root]
         xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
         
