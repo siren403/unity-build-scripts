@@ -208,45 +208,50 @@ platform :ios do
     end
 
     lane :signing_xcode_development do |options|
-        xcode_path = ''
-        if options[:work] != nil
-            xcode_path = build(work: options[:work])
-        elsif options[:xcode_path] != nil
-            xcode_path = options[:xcode_path]
-        end
+        
+        xcode_path = options[:xcode_path]
 
         match(type: "development", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Development")
+        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Development", build_configurations: "ReleaseForRunning")
     end
     
     lane :signing_xcode_distribution do |options|
-        xcode_path = ''
-        if options[:work] != nil
-            xcode_path = build(work: options[:work])
-        elsif options[:xcode_path] != nil
-            xcode_path = options[:xcode_path]
-        end
+        xcode_path = options[:xcode_path]
 
         match(type: "appstore", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Distribution")
+        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Distribution", build_configurations: "Release")
     end
     
     lane :deploy_app_center do |options|
 
-        xcode_path = ''
-        if options[:work] != nil
-            xcode_path = build(work: options[:work])
-        elsif options[:xcode_path] != nil
-            xcode_path = options[:xcode_path]
+        xcode_root = options[:xcode_root]
+        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
+        
+        project_path = xcode_proj
+
+        xcode_workspace = options[:xcode_workspace]
+        if xcode_workspace != nil
+            project_path = "#{xcode_root}/#{xcode_workspace}"
         end
+        
+        puts xcode_root
+        puts xcode_proj
+        puts project_path
+
+        #if options[:work] != nil
+        #    xcode_path = build(work: options[:work])
+        #end
+        #elsif options[:xcode_path] != nil
+        #    xcode_path = options[:xcode_path]
+        #end
 
         match(type: "development", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Development", build_configurations: ["ReleaseForRunning"])
-
-        export_ipa(project_path: xcode_path, output_dir: "Build/iOS", export_method: "development")
+        update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Development", build_configurations: ["ReleaseForRunning"])
+        
+        export_ipa(project_path: project_path, output_dir: "Build/iOS", export_method: "development")
         ipa = lane_context[:IPA_OUTPUT_PATH]
         dsym = lane_context[:DSYM_OUTPUT_PATH]
 
