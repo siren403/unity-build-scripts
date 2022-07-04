@@ -10,7 +10,6 @@ eval "$(rbenv init -)"
 # pyenv
 eval "$(pyenv init --path)"
 
-export XCODE_ROOT=$WORK_DIR/$UNITY_PROJECT_ROOT/Build/$PLATFORM/$PRODUCT_NAME
 cd $XCODE_ROOT && if [ -f "./Podfile" ]; then pod install; fi
 cd $WORK_DIR/$UNITY_PROJECT_ROOT
 
