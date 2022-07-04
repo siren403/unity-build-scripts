@@ -253,14 +253,9 @@ platform :ios do
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
         update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Development", build_configurations: ["ReleaseForRunning"])
         
-        export_ipa(project_path: project_path, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
-        ipa = lane_context[:IPA_OUTPUT_PATH]
-        dsym = lane_context[:DSYM_OUTPUT_PATH]
+        ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
 
-        puts ipa
-        puts dsym
-
-        upload_app_center(path: ipa)
+        upload_app_center(path: ipa_path)
     end
 
     private_lane :build do |options|
@@ -318,7 +313,13 @@ platform :ios do
         # ipa_path = File.expand_path("/#{output_dir}/#{product_name}.ipa", Dir.pwd)
         # dsym_path = File.expand_path("/#{output_dir}/#{product_name}.app.dSYM.zip", Dir.pwd)
         #
-        # return ipa_path, dsym_path
+        ipa_path = lane_context[:IPA_OUTPUT_PATH]
+        dsym_path = lane_context[:DSYM_OUTPUT_PATH]
+        
+        puts "ipa: #{ipa_path}"
+        puts "dsym: #{dsym_path}"
+        
+        return ipa_path, dsym_path
     end
 
     private_lane :update_signing do |options|
@@ -380,15 +381,9 @@ platform :ios do
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
         update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Distribution", build_configurations: ["Release"])
         
+        ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/AppStore", export_method: "app-store", configuration: "Release")
         
-        export_ipa(project_path: project_path, output_dir: "Build/AppStore", export_method: "app-store", configuration: "Release")
-        ipa = lane_context[:IPA_OUTPUT_PATH]
-        dsym = lane_context[:DSYM_OUTPUT_PATH]
-
-        puts ipa
-        puts dsym
-        
-        upload_pilot(ipa_path: ipa)
+        upload_pilot(ipa_path: ipa_path)
     end
 
     lane :upload_pilot do |options|
