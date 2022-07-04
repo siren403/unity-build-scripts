@@ -1,2 +1,4 @@
 report.xml
 *.iml
+
+**/.env
