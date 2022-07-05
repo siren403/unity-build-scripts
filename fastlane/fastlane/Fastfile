@@ -343,7 +343,7 @@ platform :ios do
 
         build_only = options[:dsym].nil? ? true : false
         dsym_path = options[:dsym]
-        notify_testers = options[:notify].nil? ? false : options[:notify]
+        notify_testers = options[:notify].nil? ? true : options[:notify]
 
         appcenter_upload(
             api_token: ENV["APPCENTER_IOS_API_TOKEN"],
