@@ -109,28 +109,7 @@ platform :android do
     #         release_notes: "upload #{Date.today.strftime("%Y%m%d")}"
     #     )
     # end
-    #
-    # lane :plugin do |options|
-    #     # UNITY_PATH = 'C:\Program Files\Unity\Hub\Editor\2021.2.12f1\Editor\Unity.exe'
-    #     # UNITY_VERSION = '2021.2.12f1'
-    #
-    #     UNITY_PATH = get_unity_path(options[:unity_version])
-    #
-    #     PROJECT_DIR = File.expand_path('../', Dir.pwd)
-    #     METHOD = 'AppBuilderSample.BasicAndroid.Build'
-    #     LOGFILE = "#{PROJECT_DIR}/Editor.log"
-    #
-    #     ARGS = "#{LOGFILE} -appsettings \"Assets/Samples/AppBuilder/0.0.1/Basic Android\" -keystore \"Assets/Samples/AppBuilder/0.0.1/Basic Android/user.keystore\" -keystorePasswd \"111111\" -keystoreAlias \"appbuilder\" -keystoreAliasPasswd \"111111\""
-    #
-    #     unity(
-    #         unity_path: UNITY_PATH,
-    #         # unity_version: UNITY_VERSION,
-    #         project_path: PROJECT_DIR,
-    #         build_target: "Android",
-    #         execute_method: METHOD,
-    #         extra_args: ARGS
-    #     )
-    # end
+ 
     # lane :upload_internal do
     #
     #     UNITY_VERSION = "2021.2.12f1";
@@ -398,94 +377,6 @@ platform :ios do
         )
     end
 
-    # def update_signing(path, code_sign_identity)
-    #     profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-    #     update_code_signing_settings(
-    #         path: path,
-    #         targets: "Unity-iPhone",
-    #         use_automatic_signing: false,
-    #         team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
-    #         profile_name: profiles[CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)],
-    #         code_sign_identity: code_sign_identity
-    #     )
-    # end
-
-    # def export_ipa(project, output_directory, export_method)
-    #     archive_path = "#{output_directory}/Archive"
-    #     gym(
-    #         scheme: "Unity-iPhone",
-    #         project: project,
-    #         configuration: "Release",
-    #         clean: true,
-    #         output_directory: "#{output_directory}/#{export_method}",
-    #         export_method: export_method,
-    #         include_bitcode: false,
-    #         export_options: {
-    #             compileBitcode: false
-    #         },
-    #         archive_path: archive_path
-    #     )
-    #     archive_path = File.expand_path("../#{archive_path}.xcarchive", Dir.pwd);
-    #     if File.exist?(archive_path)
-    #         sh(command: "rm -vfr #{archive_path}")
-    #     end
-    #
-    # end
-
-    # XCODE_PROJECT = File.expand_path("#{ENV["XCODE_PROJECT_PATH"]}/Unity-iPhone.xcodeproj", Dir.pwd)
-    #
-    # def build_unity(target, method, args)
-    #     unity(
-    #         unity_version: ENV["UNITY_VERSION"],
-    #         project_path: File.expand_path("../", Dir.pwd),
-    #         build_target: target,
-    #         execute_method: method,
-    #         extra_args: args
-    #     )
-    # end
-    #
-
-    #
-
-    #
-    # def install_devices
-    #     devices = ENV["INSTALL_DEVICES_ID"]
-    #                   .split("\n")
-    #                   .select { |device_id| not device_id.empty? }
-    #
-    #     devices.each do |device_id|
-    #         install_on_device(
-    #             device_id: device_id,
-    #             ipa: lane_context["IPA_OUTPUT_PATH"],
-    #         )
-    #     end
-    # end
-    #
-    # private_lane :upload_ipa do |options|
-    #
-    #     notify_testers = options[:notify].nil? ? false : options[:notify]
-    #
-    #     appcenter_upload(
-    #         file: lane_context["IPA_OUTPUT_PATH"],
-    #         notify_testers: notify_testers,
-    #         app_os: options[:app_os],
-    #         upload_build_only: true,
-    #         release_notes: "upload #{Date.today.strftime("%Y%m%d")}"
-    #     )
-    # end
-    #
-
-    #
-    # lane :unity_development_install_devices do
-    #     unity_development
-    #     install_devices
-    # end
-    #
-    # lane :unity_development_appcenter do
-    #     unity_development
-    #     upload_ipa(app_os: 'iOS')
-    # end
-    #
     # lane :adhoc do
     #     match(
     #         type: "adhoc",
@@ -567,74 +458,7 @@ platform :ios do
     #         release_notes: "upload #{Date.today.strftime("%Y%m%d")}"
     #     )
     # end
-    #
-    # lane :delete do
-    #     archive_path = File.expand_path("../Build/iOS/Archive.xcarchive", Dir.pwd);
-    #     # if File.exist?(archive_path)
-    #     #     File.delete(archive_path)
-    #     # end
-    #     sh(command: "rm -vfr #{archive_path}")
-    # end
-    #
-    # lane :unity_appstore_testflight do
-    #     method = "Samples.DeployUseCase.Build.Deploy"
-    #     args = "-appsettings \"Assets/DeployUseCase\" -variant \"iOS\""
-    #     unity(
-    #         unity_version: ENV["UNITY_VERSION"],
-    #         project_path: File.expand_path("../", Dir.pwd),
-    #         build_target: "iOS",
-    #         execute_method: method,
-    #         extra_args: args
-    #     )
-    #
-    #     match(
-    #         type: "appstore",
-    #         readonly: true
-    #     )
-    #     profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-    #     update_code_signing_settings(
-    #         path: XCODE_PROJECT,
-    #         targets: "Unity-iPhone",
-    #         use_automatic_signing: false,
-    #         team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
-    #         profile_name: profiles[CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)],
-    #         code_sign_identity: "Apple Distribution",
-    #     )
-    #     # App Uses Non-Exempt Encryption : No
-    #     gym(
-    #         scheme: "Unity-iPhone",
-    #         project: XCODE_PROJECT,
-    #         configuration: "Release",
-    #         clean: true,
-    #         output_directory: "Build/AppStore",
-    #         export_method: "app-store",
-    #         include_bitcode: false,
-    #         export_options: {
-    #             compileBitcode: false
-    #         },
-    #     )
-    # end
-    #
-    # lane :upload_pilot do
-    #     pilot(
-    #         api_key_path: File.expand_path(ENV["APPSTORECONNECT_API_JSON"], Dir.pwd),
-    #         # username: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id),
-    #         ipa: File.expand_path("../Build/AppStore/AppBuilder.ipa"),
-    #     )
-    # end
-    #
- 
-    #
-    # lane :test do
-    #     project = File.expand_path("../Build/iOS/AppBuilder/Unity-iPhone.xcodeproj", Dir.pwd)
-    #     scan(
-    #         project: project,
-    #         scheme: "Unity-iPhone",
-    #         device: "iPhone 12",
-    #     # build_for_testing: true
-    #     )
-    # end
-    #
+
     # lane :build_ipa do
     #     project = File.expand_path("../Build/iOS/AppBuilder/Unity-iPhone.xcodeproj", Dir.pwd)
     #
@@ -659,26 +483,3 @@ platform :ios do
     #     )
     # end
 end
-
-# def get_unity_path (version)
-#     unless version
-#         UI.user_error!("require unity_version")
-#     end
-
-#     path = ''
-#     if OS::Underlying.docker? and OS::Underlying.linux?
-#         # See: https://gitlab.com/gableroux/unity3d
-#         # sh "echo '/opt/Unity/Editor/Unity'"
-#         path << "/opt/unity/editors/#{version}/Editor/Unity"
-#     elsif OS.mac?
-#         path << "/Applications/Unity/Hub/Editor/#{version}/Unity.app/Contents/MacOS/Unity"
-#     elsif OS.windows?
-#         path << "C:\\Program Files\\Unity\\Hub\\Editor\\#{version}\\Editor\\Unity.exe"
-#     end
-
-#     unless File.exist?(path)
-#         UI.user_error!("not found editor path: #{path}")
-#     end
-
-#     return path
-# end
