@@ -382,10 +382,9 @@ platform :ios do
         # ipa_path = File.expand_path("../Build/AppStore/AppBuilder.ipa");
         ipa_path = options[:ipa_path]
         api_key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"]
-        latest_testflight_build_number(
-            #api_key_path: api_key_path,
-            initial_build_number: 0
-        )
+        
+        latest_testflight_build_number(initial_build_number: 0)
+        
         build_number = lane_context[SharedValues::LATEST_TESTFLIGHT_BUILD_NUMBER]
         #version = lane_context[SharedValues::LATEST_TESTFLIGHT_VERSION]
         pilot(
