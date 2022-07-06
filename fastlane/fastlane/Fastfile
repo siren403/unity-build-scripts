@@ -221,13 +221,6 @@ platform :ios do
         puts xcode_proj
         puts project_path
 
-        #if options[:work] != nil
-        #    xcode_path = build(work: options[:work])
-        #end
-        #elsif options[:xcode_path] != nil
-        #    xcode_path = options[:xcode_path]
-        #end
-
         match(type: "development", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
         update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Development", build_configurations: ["ReleaseForRunning"])
@@ -235,21 +228,6 @@ platform :ios do
         ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
 
         upload_app_center(path: ipa_path)
-    end
-
-    private_lane :build do |options|
-        ARGS = ""
-
-        if options[:work] != nil
-            ARGS = "#{ARGS} -work #{options[:work]}"
-        end
-
-        unity(
-            build_target: "iOS",
-            extra_args: ARGS
-        )
-
-        "#{ENV["FL_UNITY_PROJECT_PATH"]}/Build/ios/#{ENV["PRODUCT_NAME"]}/Unity-iPhone.xcodeproj"
     end
 
     private_lane :export_ipa do |options|
@@ -262,11 +240,8 @@ platform :ios do
         end
         
         export_method = options[:export_method]
-
         output_dir = "#{options[:output_dir]}/#{export_method}"
-
         archive_path = "#{output_dir}/Archive"
-        
         configuration = options[:configuration]
         
         puts "+++ fastlane gym"
