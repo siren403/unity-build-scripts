@@ -380,6 +380,7 @@ platform :ios do
         build_number = lane_context[SharedValues::LATEST_TESTFLIGHT_BUILD_NUMBER]
         #version = lane_context[SharedValues::LATEST_TESTFLIGHT_VERSION]
         pilot(
+#             version: version,
             skip_waiting_for_build_processing: true,
             skip_submission: true,
             build_number: build_number + 1,
