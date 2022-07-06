@@ -1,15 +1,18 @@
 #!/bin/bash
 
 function build {
+    echo "--- build unity $PLATFORM $1"
     unity-editor -quit -nographics -projectPath /app -executeMethod UActions.Bootstrap.Run -logfile - -buildTarget $PLATFORM -work $1
 }
 
 function run-lane {
     cd unity-build-scripts/fastlane
+    echo "--- bundle install"
     bundle install
     export FL_UNITY_EXECUTE_METHOD=UActions.Bootstrap.Run
     #KEY=$PRODUCT_NAME-$PLATFORM
     #restore $KEY
+    echo "--- running fastlane $PLATFORM $@"
     bundle exec fastlane $PLATFORM "$@"
     #cache $KEY
 }
