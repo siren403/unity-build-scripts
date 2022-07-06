@@ -357,6 +357,14 @@ platform :ios do
         unless xcode_proj
             UI.user_error!("empty xcode_proj")
         end
+        
+        version_number = ENV["XCODE_PROJECT_VERSION"]
+        unless version_number.nil? || version_number.strip.empty?
+            increment_version_number(
+                version_number: version_number,
+                xcodeproj: xcode_proj
+            )                
+        end
 
         match(type: "appstore", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
