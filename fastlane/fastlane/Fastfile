@@ -472,5 +472,9 @@ platform :ios do
     #         release_notes: "upload #{Date.today.strftime("%Y%m%d")}"
     #     )
     # end
-
+    
+    error do |lane, exception, options|
+#       slack_url = "https://slack-outcoming-webhook-link"
+#       slack(message: "배포에 실패했습니다 :cry:", slack_url: slack_url)
+    end
 end
