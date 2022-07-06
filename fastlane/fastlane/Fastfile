@@ -381,18 +381,17 @@ platform :ios do
         
         # ipa_path = File.expand_path("../Build/AppStore/AppBuilder.ipa");
         ipa_path = options[:ipa_path]
-        api_key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+        #api_key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"]
         
         latest_testflight_build_number(initial_build_number: 0)
-        
         build_number = lane_context[SharedValues::LATEST_TESTFLIGHT_BUILD_NUMBER]
+        
         #version = lane_context[SharedValues::LATEST_TESTFLIGHT_VERSION]
         pilot(
-#             version: version,
             skip_waiting_for_build_processing: true,
             skip_submission: true,
             build_number: build_number + 1,
-            api_key_path: api_key_path,
+            #api_key_path: api_key_path, # ENV
             # username: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id),
             ipa: ipa_path,
         )
