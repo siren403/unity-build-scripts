@@ -373,7 +373,7 @@ platform :ios do
         
         # ipa_path = File.expand_path("../Build/AppStore/AppBuilder.ipa");
         ipa_path = options[:ipa_path]
-        api_key_path = ENV["PILOT_API_KEY_PATH"]
+        api_key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"]
         latest_testflight_build_number(
             api_key_path: api_key_path,
             initial_build_number: 0
