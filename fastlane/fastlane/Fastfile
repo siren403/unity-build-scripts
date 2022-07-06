@@ -454,27 +454,4 @@ platform :ios do
     #     )
     # end
 
-    # lane :build_ipa do
-    #     project = File.expand_path("../Build/iOS/AppBuilder/Unity-iPhone.xcodeproj", Dir.pwd)
-    #
-    #     identifier = "com.DefaultCompany.AppBuilder"
-    #     automatic_code_signing(
-    #         path: project,
-    #         use_automatic_signing: true,
-    #         team_id: "D755A5HZ37",
-    #         bundle_identifier: identifier,
-    #         profile_uuid: "YR9GNYKWY2"
-    #     # code_sign_identity: "Apple Development",
-    #     # profile_name: "iOS Team Provisioning Profile: #{identifier}"
-    #     )
-    #
-    #     build_ios_app(
-    #         project: project,
-    #         scheme: "Unity-iPhone",
-    #         output_directory: File.expand_path("../Build/iOS", Dir.pwd),
-    #         # output_name: "App"
-    #         # codesigning_identity:"Apple Development: SEONGHO PARK",
-    #         skip_codesigning: true
-    #     )
-    # end
 end
