@@ -198,7 +198,13 @@ platform :ios do
 
         match(type: "development", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Development", build_configurations: "ReleaseForRunning")
+        update_signing(
+          profiles: profiles, 
+          path: xcode_path, 
+          code_sign_identity: "Apple Development", 
+          build_configurations: "ReleaseForRunning"
+          update_device: true
+        )
     end
     
     lane :signing_xcode_distribution do |options|
@@ -227,7 +233,13 @@ platform :ios do
 
         match(type: "development", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Development", build_configurations: ["ReleaseForRunning"])
+        update_signing(
+          profiles: profiles, 
+          path: xcode_proj, 
+          code_sign_identity: "Apple Development", 
+          build_configurations: ["ReleaseForRunning"],
+          update_device: true
+        )
         
         ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
 
@@ -287,7 +299,9 @@ platform :ios do
         path = options[:path]
         code_sign_identity = options[:code_sign_identity]
         build_configurations = options[:build_configurations]
-
+        
+        update_device = options[:update_device].nil? ? false : options[:update_device]
+              
         update_code_signing_settings(
             path: path,
             targets: "Unity-iPhone",
@@ -295,7 +309,8 @@ platform :ios do
             team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
             profile_name: profiles[CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)],
             code_sign_identity: code_sign_identity,
-            build_configurations: build_configurations
+            build_configurations: build_configurations,
+            force_for_new_devices: update_device
         )
     end
 
