@@ -376,6 +376,7 @@ platform :ios do
 
         pilot(
             skip_waiting_for_build_processing: true,
+            skip_submission: true,
             api_key_path: ENV["PILOT_API_KEY_PATH"],
             # username: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id),
             ipa: ipa_path,
