@@ -2,3 +2,4 @@ report.xml
 *.iml
 
 **/.env.*
+!**/.env.*.sample
