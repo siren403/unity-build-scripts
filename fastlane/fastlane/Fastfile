@@ -269,6 +269,7 @@ platform :ios do
         
         configuration = options[:configuration]
         
+        puts "+++ fastlane gym"
         gym(
             scheme: "Unity-iPhone",
             project: project_path,
@@ -287,7 +288,8 @@ platform :ios do
         if File.exist?(archive_path)
             sh(command: "rm -vfr #{archive_path}")
         end
-
+        puts "--- fastlane gym"
+        
         # product_name = ENV["PRODUCT_NAME"]
         # ipa_path = File.expand_path("/#{output_dir}/#{product_name}.ipa", Dir.pwd)
         # dsym_path = File.expand_path("/#{output_dir}/#{product_name}.app.dSYM.zip", Dir.pwd)
@@ -366,7 +368,9 @@ platform :ios do
     end
 
     lane :upload_pilot do |options|
-
+        
+        puts "--- upload testflight"
+        
         # ipa_path = File.expand_path("../Build/AppStore/AppBuilder.ipa");
         ipa_path = options[:ipa_path]
 
