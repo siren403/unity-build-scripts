@@ -22,16 +22,20 @@ fastlane_require 'dotenv'
 
 UI = FastlaneCore::UI unless Fastlane.const_defined?("UI")
 
+before_all do |lane|
+  Dotenv.overload "./.env.#{lane_context[SharedValues::PLATFORM_NAME]}"
+end
+
 platform :android do
 
-    # before_all do |lane|
-    #     Dotenv.overload '../../.env'
-    #     environment = lane_context[SharedValues::ENVIRONMENT]
-    #     unless environment.nil?
-    #         puts "Load .env file of #{environment}"
-    #         Dotenv.overload '../../.env.' + environment
-    #     end
-    # end
+#     before_all do |lane|
+#         Dotenv.overload '../../.env'
+#         environment = lane_context[SharedValues::ENVIRONMENT]
+#         unless environment.nil?
+#             puts "Load .env file of #{environment}"
+#             Dotenv.overload '../../.env.' + environment
+#         end
+#     end
 
     lane :deploy_app_center do |options|
         work = nil
