@@ -181,15 +181,38 @@ platform :ios do
             xcodeproj: xcode_proj
         )
         
-        match(type: "appstore", readonly: true)
-        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Distribution", build_configurations: ["Release"])
+        build_configuration = "Release"
         
-        ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/AppStore", export_method: "app-store", configuration: "Release")
+        profiles = match(type: "appstore", readonly: true)
+        update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Distribution", build_configurations: [build_configuration])
+        
+        ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/AppStore", export_method: "app-store", configuration: build_configuration)
       
         build_only = options[:build_only].nil? ? false : options[:build_only] 
         if !build_only
             upload_pilot(ipa_path: ipa_path, build_number: build_number)
+        end
+        
+        fields = []
+        fields << { name: "app", value: ENV["APP_IDENTIFIER"] }
+        fields << { name: "version", value: version_number }
+        fields << { name: "build", value: build_number }
+        fields << { name: "build configuration", value: build_configuration }
+        
+        if build_only
+            fields << {
+                name: "build_only", value: build_only
+            }
+        end
+        
+        begin
+            discord_notifier(
+                title: "deploy testflight",
+                #description: ""
+                fields: fields
+            )
+        rescue => ex
+            UI.message("discord noti failed")
         end
     end
   
@@ -221,8 +244,7 @@ platform :ios do
         puts xcode_proj
         puts project_path
 
-        match(type: "development", readonly: true, force_for_new_devices: true)
-        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+        profiles = match(type: "development", readonly: true, force_for_new_devices: true)
         update_signing(
           profiles: profiles, 
           path: xcode_proj, 
@@ -239,7 +261,7 @@ platform :ios do
 
         skip_wifi = options[:skip_wifi].nil? ? false : options[:skip_wifi]
         uninstall = options[:uninstall].nil? ? nil : options[:uninstall]
-	timeout = options[:timeout].nil? ? 30 : options[:timeout]
+        timeout = options[:timeout].nil? ? 30 : options[:timeout]
         device_id = options[:device_id]
         ipa = options[:ipa]
 
