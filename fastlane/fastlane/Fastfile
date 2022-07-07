@@ -249,6 +249,7 @@ platform :ios do
 
         begin
             args = "-v -n -t #{timeout}"
+            
             if !uninstall.nil?
                 args = "#{args} -r --bundle_id #{uninstall}"
             end
@@ -276,8 +277,7 @@ platform :ios do
                 try_install_device(
                     device_id: device_id,
                     ipa: ipa,
-                    skip_wifi: skip_wifi,
-                    uninstall: false
+                    skip_wifi: skip_wifi
                 )
             else
                 UI.error(ex)
