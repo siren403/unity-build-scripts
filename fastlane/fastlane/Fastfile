@@ -181,8 +181,11 @@ platform :ios do
         update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Distribution", build_configurations: ["Release"])
         
         ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/AppStore", export_method: "app-store", configuration: "Release")
-        
-        upload_pilot(ipa_path: ipa_path)
+      
+        build_only = options[:build_only].nil? ? false : options[:build_only] 
+        if !build_only
+            upload_pilot(ipa_path: ipa_path)
+        end
       
         try_install_device(
             ipa: ipa_path,
