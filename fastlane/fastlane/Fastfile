@@ -193,8 +193,8 @@ platform :ios do
         
         begin
             discord_notifier(
-                title: "deploy testflight",
-                #description: ""
+                title: "fastlane completed",
+                description: "deploy testflight",
                 fields: fields
             )
         rescue => ex
