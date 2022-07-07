@@ -194,21 +194,12 @@ platform :ios do
     end
   
     lane :deploy_device do |options|
-		
-	end
-	
-	private_lane get_paths do |options|
-		xcode_root = options[:xcode_root]
-        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
+		root, proj, dest = get_paths options
+        puts root, proj, dest
         
-        project_path = xcode_proj
-
-        xcode_workspace = options[:xcode_workspace]
-        if xcode_workspace != nil
-            project_path = "#{xcode_root}/#{xcode_workspace}"
-        end
-        
-		[xcode_root, xcode_proj, project_path]
+        profiles1 = match(type: "development", readonly: true, force_for_new_devices: true)
+        profiles2 = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+        puts profiles1, profiles2
 	end
   
     lane :deploy_app_center do |options|
@@ -416,7 +407,18 @@ platform :ios do
             ipa: ipa_path,
         )
     end
+  
+    private_lane :get_paths do |options|
+        xcode_root = options[:xcode_root]
+        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
+        project_path = xcode_proj
 
+        xcode_workspace = options[:xcode_workspace]
+        if xcode_workspace != nil
+            project_path = "#{xcode_root}/#{xcode_workspace}"
+        end
+        [xcode_root, xcode_proj, project_path]
+    end
     # lane :adhoc do
     #     match(
     #         type: "adhoc",
