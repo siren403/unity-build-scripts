@@ -255,7 +255,7 @@ platform :ios do
           profiles: profiles, 
           path: xcode_path, 
           code_sign_identity: "Apple Development", 
-          build_configurations: "ReleaseForRunning"
+          build_configurations: "ReleaseForRunning",
           update_device: true
         )
     end
