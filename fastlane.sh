@@ -20,6 +20,8 @@ echo "--- bundle install"
 bundle install
 
 LANE="$(perl -pe 's/(\S+):(\S+)//g' <<< $@)"
-echo "--- running fastlane $PLATFORM $LANE"
 
-bundle exec fastlane $PLATFORM "$@"
+function lane {
+  echo "--- running fastlane $PLATFORM $LANE"
+  bundle exec fastlane $PLATFORM "$@"
+}
