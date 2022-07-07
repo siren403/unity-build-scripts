@@ -322,7 +322,7 @@ platform :ios do
         configuration = options[:configuration]
         
         puts "+++ fastlane gym"
-	puts "~~~ xcodebuild: WARNING: Using the first of multiple matching destinations:"
+
         gym(
             scheme: "Unity-iPhone",
             project: project_path,
@@ -335,7 +335,8 @@ platform :ios do
             export_options: {
                 compileBitcode: false
             },
-            archive_path: archive_path
+            archive_path: archive_path,
+            destination: "generic/platform=iOS",
         )
         archive_path = File.expand_path("../#{archive_path}.xcarchive", Dir.pwd)
         if File.exist?(archive_path)
