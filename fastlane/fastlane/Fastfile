@@ -322,6 +322,7 @@ platform :ios do
         configuration = options[:configuration]
         
         puts "+++ fastlane gym"
+	puts "~~~ xcodebuild: WARNING: Using the first of multiple matching destinations:"
         gym(
             scheme: "Unity-iPhone",
             project: project_path,
