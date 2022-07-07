@@ -175,7 +175,8 @@ platform :ios do
                 xcodeproj: xcode_proj
             )                
         end
-
+        build_number = latest_testflight_build_number(initial_build_number: 0) + 1
+        
         match(type: "appstore", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
         update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Distribution", build_configurations: ["Release"])
@@ -184,7 +185,7 @@ platform :ios do
       
         build_only = options[:build_only].nil? ? false : options[:build_only] 
         if !build_only
-            upload_pilot(ipa_path: ipa_path)
+            upload_pilot(ipa_path: ipa_path, build_number: build_number)
         end
     end
   
@@ -388,14 +389,13 @@ platform :ios do
         ipa_path = options[:ipa_path]
         #api_key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"]
         
-        latest_testflight_build_number(initial_build_number: 0)
-        build_number = lane_context[SharedValues::LATEST_TESTFLIGHT_BUILD_NUMBER]
-        
+        build_number = options[:build_number]
+         
         #version = lane_context[SharedValues::LATEST_TESTFLIGHT_VERSION]
         pilot(
             skip_waiting_for_build_processing: true,
             skip_submission: true,
-            build_number: build_number + 1,
+            build_number: build_number,
             #api_key_path: api_key_path, # ENV
             # username: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id),
             ipa: ipa_path,
