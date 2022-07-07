@@ -193,7 +193,35 @@ platform :ios do
         )
     end
   
+    lane :deploy_app_center do |options|
+        xcode_root = options[:xcode_root]
+        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
+        
+        project_path = xcode_proj
 
+        xcode_workspace = options[:xcode_workspace]
+        if xcode_workspace != nil
+            project_path = "#{xcode_root}/#{xcode_workspace}"
+        end
+        
+        puts xcode_root
+        puts xcode_proj
+        puts project_path
+
+        match(type: "development", readonly: true, force_for_new_devices: true)
+        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+        update_signing(
+          profiles: profiles, 
+          path: xcode_proj, 
+          code_sign_identity: "Apple Development", 
+          build_configurations: ["ReleaseForRunning"]
+        )
+        
+        ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
+
+        upload_app_center(path: ipa_path)
+    end
+  
     lane :try_install_device do |options|
 
         skip_wifi = options[:skip_wifi].nil? ? false : options[:skip_wifi]
@@ -252,14 +280,13 @@ platform :ios do
         
         xcode_path = options[:xcode_path]
 
-        match(type: "development", readonly: true)
+        match(type: "development", readonly: true, force_for_new_devices: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
         update_signing(
           profiles: profiles, 
           path: xcode_path, 
           code_sign_identity: "Apple Development", 
-          build_configurations: "ReleaseForRunning",
-          update_device: true
+          build_configurations: "ReleaseForRunning"
         )
     end
     
@@ -271,37 +298,6 @@ platform :ios do
         update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Distribution", build_configurations: "Release")
     end
     
-    lane :deploy_app_center do |options|
-
-        xcode_root = options[:xcode_root]
-        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
-        
-        project_path = xcode_proj
-
-        xcode_workspace = options[:xcode_workspace]
-        if xcode_workspace != nil
-            project_path = "#{xcode_root}/#{xcode_workspace}"
-        end
-        
-        puts xcode_root
-        puts xcode_proj
-        puts project_path
-
-        match(type: "development", readonly: true)
-        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_signing(
-          profiles: profiles, 
-          path: xcode_proj, 
-          code_sign_identity: "Apple Development", 
-          build_configurations: ["ReleaseForRunning"],
-          update_device: true
-        )
-        
-        ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
-
-        upload_app_center(path: ipa_path)
-    end
-
     private_lane :export_ipa do |options|
         project_path = options[:project_path]
         workspace_path = nil
@@ -351,9 +347,7 @@ platform :ios do
         path = options[:path]
         code_sign_identity = options[:code_sign_identity]
         build_configurations = options[:build_configurations]
-        
-        update_device = options[:update_device].nil? ? false : options[:update_device]
-              
+     
         update_code_signing_settings(
             path: path,
             targets: "Unity-iPhone",
@@ -361,8 +355,7 @@ platform :ios do
             team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
             profile_name: profiles[CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)],
             code_sign_identity: code_sign_identity,
-            build_configurations: build_configurations,
-            force_for_new_devices: update_device
+            build_configurations: build_configurations
         )
     end
 
