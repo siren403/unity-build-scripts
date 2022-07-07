@@ -173,9 +173,13 @@ platform :ios do
             increment_version_number(
                 version_number: version_number,
                 xcodeproj: xcode_proj
-            )                
+            )
         end
         build_number = latest_testflight_build_number(initial_build_number: 0) + 1
+        increment_version_number(
+            build_number: build_number,
+            xcodeproj: xcode_proj
+        )
         
         match(type: "appstore", readonly: true)
         profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
@@ -190,7 +194,7 @@ platform :ios do
     end
   
     lane :deploy_device do |options|
-	    paths = get_paths options
+        paths = get_paths options
         puts paths
         root, proj, dest = paths
         
