@@ -213,6 +213,7 @@ platform :ios do
             )
         rescue => ex
             UI.message("discord noti failed")
+            UI.message(ex)
         end
     end
   
