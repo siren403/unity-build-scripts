@@ -193,6 +193,24 @@ platform :ios do
         )
     end
   
+    lane :deploy_device do |options|
+		
+	end
+	
+	private_lane get_paths do |options|
+		xcode_root = options[:xcode_root]
+        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
+        
+        project_path = xcode_proj
+
+        xcode_workspace = options[:xcode_workspace]
+        if xcode_workspace != nil
+            project_path = "#{xcode_root}/#{xcode_workspace}"
+        end
+        
+		[xcode_root, xcode_proj, project_path]
+	end
+  
     lane :deploy_app_center do |options|
         xcode_root = options[:xcode_root]
         xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
