@@ -21,7 +21,7 @@ bundle install
 
 export LANE="$(perl -pe 's/(\S+):(\S+)//g' <<< $@)"
 
-function lane {
+function run_lane {
   echo "--- running fastlane $PLATFORM $LANE"
   bundle exec fastlane $PLATFORM "$@"
 }
