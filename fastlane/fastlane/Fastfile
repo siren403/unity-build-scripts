@@ -239,6 +239,7 @@ platform :ios do
 
         skip_wifi = options[:skip_wifi].nil? ? false : options[:skip_wifi]
         uninstall = options[:uninstall].nil? ? nil : options[:uninstall]
+	timeout = options[:timeout].nil? ? 30 : options[:timeout]
         device_id = options[:device_id]
         ipa = options[:ipa]
 
@@ -247,7 +248,7 @@ platform :ios do
         end
 
         begin
-            args = "-v -n -t 20"
+            args = "-v -n -t #{timeout}"
             if !uninstall.nil?
                 args = "#{args} -r --bundle_id #{uninstall}"
             end
