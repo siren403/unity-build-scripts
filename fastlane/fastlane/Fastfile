@@ -144,54 +144,107 @@ end
 
 platform :ios do
 
-    lane :deploy_device do |options|
-        xcode_path = build(work: options[:work])
-        destination = "platform=iOS,id=#{ENV["DEPLOY_DEVICE_ID"]}"
+    before_all do |lane|
+        puts "ios lane: #{lane}"
+    end
+  
+    lane :deploy_testflight do |options|
+        
+        xcode_root = options[:xcode_root]
+        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
+        
+        project_path = xcode_proj
 
-        install_device(
-            product_name: ENV["PRODUCT_NAME"],
-            project: xcode_path,
-            team_id: ENV["TEAM_ID"],
-            destination: destination,
-            device: ENV["DEPLOY_DEVICE_ID"],
+        xcode_workspace = options[:xcode_workspace]
+        if xcode_workspace != nil
+            project_path = "#{xcode_root}/#{xcode_workspace}"
+        end
+        
+        puts xcode_root
+        puts xcode_proj
+        puts project_path
+
+        unless xcode_proj
+            UI.user_error!("empty xcode_proj")
+        end
+        
+        version_number = ENV["XCODE_PROJECT_VERSION"]
+        unless version_number.nil? || version_number.strip.empty?
+            increment_version_number(
+                version_number: version_number,
+                xcodeproj: xcode_proj
+            )                
+        end
+
+        match(type: "appstore", readonly: true)
+        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+        update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Distribution", build_configurations: ["Release"])
+        
+        ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/AppStore", export_method: "app-store", configuration: "Release")
+        
+        upload_pilot(ipa_path: ipa_path)
+      
+        try_install_device(
+            ipa: ipa_path,
+            uninstall: ENV["APP_IDENTIFIRE"]
         )
     end
+  
 
-    lane :install_device do |options|
-        product_name = options[:product_name]
-        project = options[:project]
-        team_id = options[:team_id]
-        destination = options[:destination]
-        device = options[:device]
+    lane :try_install_device do |options|
 
-        update_code_signing_settings(
-            path: project,
-            targets: "Unity-iPhone",
-            use_automatic_signing: true,
-            team_id: team_id
-        )
+        skip_wifi = options[:skip_wifi].nil? ? false : options[:skip_wifi]
+        uninstall = options[:uninstall].nil? ? nil : options[:uninstall]
+        device_id = options[:device_id]
+        ipa = options[:ipa]
+
+        if ipa.nil?
+            UI.user_error!("require ipa")
+        end
 
         begin
-
-            scan(
-                project: project,
-                scheme: 'Unity-iPhone',
-                destination: destination,
-                build_for_testing: true
+            args = "-v -n -t 20"
+            if !uninstall.nil?
+                args = "#{args} -r --bundle_id #{uninstall}"
+            end
+            install_on_device(
+                device_id: device_id,
+                ipa: ipa,
+                extra: args,
+                skip_wifi: skip_wifi
             )
-
-            derived_path = lane_context[SharedValues::SCAN_DERIVED_DATA_PATH]
-
-            sh "(ios-deploy -i #{device} -b #{derived_path}/Build/Products/Debug-iphoneos/#{product_name}.app || true)"
         rescue => ex
-            UI.error(ex)
+            if !skip_wifi && ex.message.match(/This device is no longer connected/i)
+                UI.message("wifi - not connected device")
+                UI.message("try not wifi device")
+                try_install_device(
+                    device_id: device_id,
+                    ipa: ipa,
+                    skip_wifi: true,
+                    uninstall: uninstall
+                )
+                next
+            elsif ex.message.match(/The device is locked/i)
+                UI.message("usb - locked")
+            elsif ex.message.match(/Uninstall failed/i)
+                UI.message("uninstall failed")
+                try_install_device(
+                    device_id: device_id,
+                    ipa: ipa,
+                    skip_wifi: skip_wifi,
+                    uninstall: false
+                )
+            else
+                UI.error(ex)
+            end
+        else
+            UI.message "install success"
+        ensure
+            UI.message "try_install_device finally"
         end
     end
 
-    error do |lane, exception|
-
-    end
-
+ 
     lane :signing_xcode_development do |options|
         
         xcode_path = options[:xcode_path]
@@ -281,10 +334,6 @@ platform :ios do
         end
         puts "--- fastlane gym"
         
-        # product_name = ENV["PRODUCT_NAME"]
-        # ipa_path = File.expand_path("/#{output_dir}/#{product_name}.ipa", Dir.pwd)
-        # dsym_path = File.expand_path("/#{output_dir}/#{product_name}.app.dSYM.zip", Dir.pwd)
-        #
         ipa_path = lane_context[:IPA_OUTPUT_PATH]
         dsym_path = lane_context[:DSYM_OUTPUT_PATH]
         
@@ -330,43 +379,6 @@ platform :ios do
             #app_name: ENV["APPCENTER_IOS_APP_NAME"], # ENV
             release_notes: "upload #{Date.today.strftime("%Y%m%d")}"
         )
-    end
-
-    lane :deploy_testflight do |options|
-        
-        xcode_root = options[:xcode_root]
-        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
-        
-        project_path = xcode_proj
-
-        xcode_workspace = options[:xcode_workspace]
-        if xcode_workspace != nil
-            project_path = "#{xcode_root}/#{xcode_workspace}"
-        end
-        
-        puts xcode_root
-        puts xcode_proj
-        puts project_path
-
-        unless xcode_proj
-            UI.user_error!("empty xcode_proj")
-        end
-        
-        version_number = ENV["XCODE_PROJECT_VERSION"]
-        unless version_number.nil? || version_number.strip.empty?
-            increment_version_number(
-                version_number: version_number,
-                xcodeproj: xcode_proj
-            )                
-        end
-
-        match(type: "appstore", readonly: true)
-        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Distribution", build_configurations: ["Release"])
-        
-        ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/AppStore", export_method: "app-store", configuration: "Release")
-        
-        upload_pilot(ipa_path: ipa_path)
     end
 
     lane :upload_pilot do |options|
@@ -473,8 +485,12 @@ platform :ios do
     #     )
     # end
     
-    error do |lane, exception, options|
-#       slack_url = "https://slack-outcoming-webhook-link"
-#       slack(message: "배포에 실패했습니다 :cry:", slack_url: slack_url)
-    end
+#     error do |lane, exception|
+
+#     end
+
+#     error do |lane, exception, options|
+#        slack_url = "https://slack-outcoming-webhook-link"
+#        slack(message: "배포에 실패했습니다 :cry:", slack_url: slack_url)
+#     end
 end
