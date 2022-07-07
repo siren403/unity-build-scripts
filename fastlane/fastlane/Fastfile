@@ -150,43 +150,29 @@ platform :ios do
   
     lane :deploy_testflight do |options|
         
-        xcode_root = options[:xcode_root]
-        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
-        
-        project_path = xcode_proj
-
-        xcode_workspace = options[:xcode_workspace]
-        if xcode_workspace != nil
-            project_path = "#{xcode_root}/#{xcode_workspace}"
-        end
-        
-        puts xcode_root
-        puts xcode_proj
-        puts project_path
-
-        unless xcode_proj
-            UI.user_error!("empty xcode_proj")
-        end
+        paths = get_paths options
+        puts paths
+        root, proj, dest = paths
         
         version_number = ENV["XCODE_PROJECT_VERSION"]
         unless version_number.nil? || version_number.strip.empty?
             increment_version_number(
                 version_number: version_number,
-                xcodeproj: xcode_proj
+                xcodeproj: proj
             )
         end
         build_number = latest_testflight_build_number(initial_build_number: 0) + 1
         increment_build_number(
             build_number: build_number,
-            xcodeproj: xcode_proj
+            xcodeproj: proj
         )
         
         build_configuration = "Release"
         
         profiles = match(type: "appstore", readonly: true)
-        update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Distribution", build_configurations: [build_configuration])
+        update_signing(profiles: profiles, path: proj, code_sign_identity: "Apple Distribution", build_configurations: [build_configuration])
         
-        ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/AppStore", export_method: "app-store", configuration: build_configuration)
+        ipa_path, dsym_path = export_ipa(project_path: dest, output_dir: "Build/AppStore", export_method: "app-store", configuration: build_configuration)
       
         build_only = options[:build_only].nil? ? false : options[:build_only] 
         if !build_only
@@ -231,29 +217,20 @@ platform :ios do
 	end
   
     lane :deploy_app_center do |options|
-        xcode_root = options[:xcode_root]
-        xcode_proj = "#{xcode_root}/Unity-iPhone.xcodeproj"
         
-        project_path = xcode_proj
-
-        xcode_workspace = options[:xcode_workspace]
-        if xcode_workspace != nil
-            project_path = "#{xcode_root}/#{xcode_workspace}"
-        end
+        paths = get_paths options
+        puts paths
+        root, proj, dest = paths
         
-        puts xcode_root
-        puts xcode_proj
-        puts project_path
-
         profiles = match(type: "development", readonly: true, force_for_new_devices: true)
         update_signing(
           profiles: profiles, 
-          path: xcode_proj, 
+          path: proj, 
           code_sign_identity: "Apple Development", 
           build_configurations: ["ReleaseForRunning"]
         )
         
-        ipa_path, dsym_path = export_ipa(project_path: project_path, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
+        ipa_path, dsym_path = export_ipa(project_path: dest, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
 
         upload_app_center(path: ipa_path)
     end
@@ -440,6 +417,9 @@ platform :ios do
         xcode_workspace = options[:xcode_workspace]
         if xcode_workspace != nil
             project_path = "#{xcode_root}/#{xcode_workspace}"
+            if !project_path.end_with?(".xcworkspace")
+                project_path = "#{project_path}.xcworkspace"
+            end
         end
         [xcode_root, xcode_proj, project_path]
     end
