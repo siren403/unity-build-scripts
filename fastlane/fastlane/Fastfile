@@ -194,12 +194,15 @@ platform :ios do
     end
   
     lane :deploy_device do |options|
-		root, proj, dest = get_paths options
-        puts root, proj, dest
+        root, proj, dest = get_paths options
+        puts root
+        puts proj
+        puts dest
         
         profiles1 = match(type: "development", readonly: true, force_for_new_devices: true)
         profiles2 = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        puts profiles1, profiles2
+        puts profiles1
+        puts profiles2
 	end
   
     lane :deploy_app_center do |options|
