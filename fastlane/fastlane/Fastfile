@@ -186,23 +186,19 @@ platform :ios do
         if !build_only
             upload_pilot(ipa_path: ipa_path)
         end
-      
+    end
+  
+    lane :deploy_device do |options|
+	    paths = get_paths options
+        puts paths
+        root, proj, dest = paths
+        
+        signing_xcode_development(xcode_proj: proj)
+        ipa_path, dsym_path = export_ipa(project_path: dest, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
         try_install_device(
             ipa: ipa_path,
             uninstall: ENV["APP_IDENTIFIRE"]
         )
-    end
-  
-    lane :deploy_device do |options|
-        root, proj, dest = get_paths options
-        puts root
-        puts proj
-        puts dest
-        
-        profiles1 = match(type: "development", readonly: true, force_for_new_devices: true)
-        profiles2 = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        puts profiles1
-        puts profiles2
 	end
   
     lane :deploy_app_center do |options|
@@ -289,25 +285,20 @@ platform :ios do
 
  
     lane :signing_xcode_development do |options|
-        
-        xcode_path = options[:xcode_path]
-
-        match(type: "development", readonly: true, force_for_new_devices: true)
-        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+        xcode_proj = options[:xcode_proj]
+        profiles = match(type: "development", readonly: true, force_for_new_devices: true)
         update_signing(
           profiles: profiles, 
-          path: xcode_path, 
+          path: xcode_proj, 
           code_sign_identity: "Apple Development", 
           build_configurations: "ReleaseForRunning"
         )
     end
     
     lane :signing_xcode_distribution do |options|
-        xcode_path = options[:xcode_path]
-
-        match(type: "appstore", readonly: true)
-        profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
-        update_signing(profiles: profiles, path: xcode_path, code_sign_identity: "Apple Distribution", build_configurations: "Release")
+        xcode_proj = options[:xcode_proj]
+        profiles = match(type: "appstore", readonly: true)
+        update_signing(profiles: profiles, path: xcode_proj, code_sign_identity: "Apple Distribution", build_configurations: "Release")
     end
     
     private_lane :export_ipa do |options|
