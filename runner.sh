@@ -4,6 +4,12 @@ function build {
     echo "--- build unity $PLATFORM $1"
     unity-editor -quit -nographics -projectPath /app -executeMethod UActions.Bootstrap.Run -logfile - -buildTarget $PLATFORM -work $1
 }
+function build-url {
+    URL="$1"
+    WORK="$2"
+    echo "--- build unity $PLATFORM $WORK"
+    unity-editor -quit -nographics -projectPath /app -executeMethod UActions.Bootstrap.Run -logfile - -buildTarget $PLATFORM -work "$WORK" -url "$URL"
+}
 
 function run-lane {
     cd unity-build-scripts/fastlane
