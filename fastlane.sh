@@ -19,9 +19,8 @@ cd "./unity-build-scripts/fastlane/"
 echo "--- bundle install"
 bundle install
 
-export LANE="$(perl -pe 's/(\S+):(\S+)//g' <<< $@)"
-
 function run_lane {
+  LANE="$(perl -pe 's/(\S+):(\S+)//g' <<< $@)"
   echo "--- running fastlane $PLATFORM $LANE"
   bundle exec fastlane $PLATFORM "$@"
 }
