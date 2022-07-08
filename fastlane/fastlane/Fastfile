@@ -208,6 +208,14 @@ platform :ios do
         puts paths
         root, proj, dest = paths
         
+        version = get_version_number(xcodeproj: proj, target: "Unity-iPhone")
+        build_number = get_build_number(xcodeproj: proj)
+        update_info_plist(
+            xcodeproj: proj,
+            plist_path: "./Info.plist",
+            display_name: "#{ENV["PRODUCT_NAME"]} #{version}(#{build_number})}"
+        )
+        
         signing_xcode_development(xcode_proj: proj)
         ipa_path, dsym_path = export_ipa(project_path: dest, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
         try_install_device(
