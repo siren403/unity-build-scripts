@@ -213,6 +213,7 @@ platform :ios do
         update_info_plist(
             xcodeproj: proj,
             plist_path: "./Info.plist",
+            # TODO: product name from xcode
             display_name: "#{ENV["PRODUCT_NAME"]} #{version}(#{build_number})}"
         )
         
