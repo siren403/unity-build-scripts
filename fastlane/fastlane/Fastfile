@@ -215,7 +215,7 @@ platform :ios do
             get_info_plist_value(path: "#{root}/Info.plist", key: "CFBundleDisplayName") :
             ENV["PRODUCT_NAME"]
         
-        verbose_product_name = "#{product_name} #{version}(#{build_number})"
+        verbose_product_name = "#{version}(#{build_number}) #{product_name}"
         puts "change product name: #{verbose_product_name}"
         update_info_plist(
             xcodeproj: proj,
