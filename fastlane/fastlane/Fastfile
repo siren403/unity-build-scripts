@@ -210,15 +210,25 @@ platform :ios do
         
         version = get_version_number(xcodeproj: proj, target: "Unity-iPhone")
         build_number = get_build_number(xcodeproj: proj)
+        product_name = get_info_plist_value(path: "#{root}/Info.plist", key: "CFBundleDisplayName")
+        
         update_info_plist(
             xcodeproj: proj,
             plist_path: "./Info.plist",
             # TODO: product name from xcode
-            display_name: "#{ENV["PRODUCT_NAME"]} #{version}(#{build_number})}"
+            display_name: "#{product_name} #{version}(#{build_number})}"
         )
         
         signing_xcode_development(xcode_proj: proj)
         ipa_path, dsym_path = export_ipa(project_path: dest, output_dir: "Build/iOS", export_method: "development", configuration: "ReleaseForRunning")
+        
+        update_info_plist(
+            xcodeproj: proj,
+            plist_path: "./Info.plist",
+            # TODO: product name from xcode
+            display_name: product_name
+        )
+        
         try_install_device(
             ipa: ipa_path,
             uninstall: ENV["APP_IDENTIFIER"]
