@@ -176,7 +176,7 @@ platform :ios do
       
         build_only = options[:build_only].nil? ? false : options[:build_only] 
         if !build_only
-            upload_pilot(ipa_path: ipa_path, build_number: build_number)
+            upload_pilot(ipa_path: ipa_path, build_number: "#{build_number}")
         end
         
         fields = []
