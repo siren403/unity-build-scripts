@@ -3,8 +3,7 @@
 #set -ex
 set -e
 
-ECHO_GROUP="image build $UNITY_VERSION $PLATFORM"
-echo "--- $ECHO_GROUP"
+echo "--- image build $UNITY_VERSION $PLATFORM"
 # UNITY_VERSION=2021.3.3f1
 GAME_CI_VERSION=1.0.1 # https://github.com/game-ci/docker/releases
 MY_USERNAME=qkrsogusl3
@@ -83,5 +82,3 @@ fi
 # uncomment the following to publish the built images to docker hub
 #  docker push ${IMAGE_TO_PUBLISH}
 done
-
-echo "~~~ $ECHO_GROUP"
