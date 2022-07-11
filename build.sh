@@ -64,10 +64,10 @@ if [ "$DEBUG" = true ]; then
       -itd --entrypoint /bin/bash \
       -v $(echo $(pwd):/app) \
       unity
-elif [ "$SYNC" = true ]; then
+elif [ -n "$SYNC" ]; then
   docker-compose -f ${COMPOSE_FILE} run \
       --rm \
-      -v osx-sync:/app \
+      -v $(echo "$SYNC":/app) \
       unity $(echo ${args})
 else
   docker-compose -f ${COMPOSE_FILE} run \
