@@ -63,13 +63,16 @@ if [ "$DEBUG" = true ]; then
   docker-compose -f ${COMPOSE_FILE} run \
       -itd --entrypoint /bin/bash \
       -v $(echo $(pwd):/app) \
-      -v /tmp:/tmp \
       unity
+elif [ "$SYNC" = true ]; then
+  docker-compose -f ${COMPOSE_FILE} run \
+      -itd --entrypoint /bin/bash \
+      -v osx-sync:/app \
+      unity    
 else
   docker-compose -f ${COMPOSE_FILE} run \
       --rm \
       -v $(echo $(pwd):/app) \
-      -v /tmp:/tmp \
       unity $(echo ${args})
 fi
 
