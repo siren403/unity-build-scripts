@@ -65,12 +65,14 @@ if [ "$DEBUG" = true ]; then
       -v $(echo $(pwd):/app) \
       unity
 elif [ -n "$SYNC" ]; then
+  echo "compose run sync $args"
   docker-compose -f ${COMPOSE_FILE} run \
       --rm \
       -v $(echo "$SYNC"):/app \
       -v $(echo $(pwd)/Build):/app/Build \
       unity $(echo ${args})
 else
+  echo "compose run $args"
   docker-compose -f ${COMPOSE_FILE} run \
       --rm \
       -v $(echo $(pwd):/app) \
