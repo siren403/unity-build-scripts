@@ -66,9 +66,9 @@ if [ "$DEBUG" = true ]; then
       unity
 elif [ "$SYNC" = true ]; then
   docker-compose -f ${COMPOSE_FILE} run \
-      -itd --entrypoint /bin/bash \
+      --rm \
       -v osx-sync:/app \
-      unity    
+      unity $(echo ${args})
 else
   docker-compose -f ${COMPOSE_FILE} run \
       --rm \
