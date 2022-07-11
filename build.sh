@@ -67,7 +67,8 @@ if [ "$DEBUG" = true ]; then
 elif [ -n "$SYNC" ]; then
   docker-compose -f ${COMPOSE_FILE} run \
       --rm \
-      -v $(echo "$SYNC"):/app:nocopy \
+      -v $(echo "$SYNC"):/app \
+      -v $(echo $(pwd)/Build):/app/Build \
       unity $(echo ${args})
 else
   docker-compose -f ${COMPOSE_FILE} run \
